@@ -5,7 +5,11 @@
   "repository": "https://github.com/abelsouzacosta/clean-api-node.git",
   "author": "Abel Junior <abelsouzacosta@gmail.com>",
   "license": "MIT",
+  "lint-staged": {
+    "*.js": ["standard"]
+  },
   "devDependencies": {
+    "lint-staged": "^11.1.2",
     "standard": "^16.0.3"
   }
 }
