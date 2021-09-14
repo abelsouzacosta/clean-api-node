@@ -7,7 +7,7 @@
   "license": "MIT",
   "lint-staged": {
     "*.js": [
-      "standard"
+      "standard --fix"
     ]
   },
   "husky": {
