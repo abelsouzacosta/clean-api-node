@@ -10,7 +10,8 @@
     "@commitlint/config-conventional": "^13.1.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
-    "husky": "4"
+    "husky": "4",
+    "standard": "^16.0.3"
   },
   "config": {
     "commitizen": {
