@@ -5,12 +5,6 @@
   "repository": "git@github.com:abelsouzacosta/clean-api-node.git",
   "author": "Abel Souza <abelsouzacosta@gmail.com>",
   "license": "MIT",
-  "lint-staged": {
-    "*.js": [
-      "standard --fix",
-      "git add"
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
