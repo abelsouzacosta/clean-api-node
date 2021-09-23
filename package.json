@@ -21,7 +21,8 @@
     }
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:staged": "jest"
   },
   "standard": {
     "env": ["jest"]
