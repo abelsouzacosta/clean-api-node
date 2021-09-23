@@ -1,23 +1,31 @@
 class LoginRouter {
   route (httpRequest) {
     if (!httpRequest || !httpRequest.body) {
-      return {
-        statusCode: 500
-      }
+      return HttpResponse.serverError()
     }
 
     const { email, password } = httpRequest.body
 
     if (!email || email === '') {
-      return {
-        statusCode: 400
-      }
+      return HttpResponse.badRequest()
     }
 
     if (!password || password === '') {
-      return {
-        statusCode: 400
-      }
+      return HttpResponse.badRequest()
+    }
+  }
+}
+
+class HttpResponse {
+  static badRequest () {
+    return {
+      statusCode: 400
+    }
+  }
+
+  static serverError () {
+    return {
+      statusCode: 500
     }
   }
 }
