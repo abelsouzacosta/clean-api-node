@@ -3,8 +3,9 @@ const InvalidParamError = require('../helpers/invalid-param-error')
 const MissingParamError = require('../helpers/missing-param-error')
 
 module.exports = class LoginRouter {
-  constructor (authUseCase) {
+  constructor (authUseCase, emailValidator) {
     this.authUseCase = authUseCase
+    this.emailValidator = emailValidator
   }
 
   async route (httpRequest) {
@@ -17,8 +18,7 @@ module.exports = class LoginRouter {
         return HttpResponse.badRequest(error)
       }
 
-      // TODO: Refactor, move this code to a separated file
-      if (!/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
+      if (!this.emailValidator.isValid(email)) {
         const invalidError = new InvalidParamError('email')
 
         return HttpResponse.badRequest(invalidError)

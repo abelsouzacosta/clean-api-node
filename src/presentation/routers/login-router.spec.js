@@ -7,9 +7,24 @@ const InvalidParamError = require('../helpers/invalid-param-error')
 const makeSut = () => {
   const authUseCaseSpy = makeAuthUseCase()
   authUseCaseSpy.accessToken = 'any_token'
-  const sut = new LoginRouter(authUseCaseSpy)
+  const emailValidator = makeEmailValidatorSpy()
 
-  return { sut, authUseCaseSpy }
+  const sut = new LoginRouter(authUseCaseSpy, emailValidator)
+
+  return { sut, authUseCaseSpy, emailValidator }
+}
+
+const makeEmailValidatorSpy = () => {
+  class EmailValidator {
+    isValid (address) {
+      return this.isEmailValid
+    }
+  }
+
+  const emailValidatorSpy = new EmailValidator()
+  emailValidatorSpy.isEmailValid = true
+
+  return emailValidatorSpy
 }
 
 const makeAuthUseCase = () => {
@@ -122,7 +137,8 @@ describe('Login router', () => {
   })
 
   test('Should return 400 if an invalid email is provided', async () => {
-    const { sut } = makeSut()
+    const { sut, emailValidator } = makeSut()
+    emailValidator.isEmailValid = false
     const httpRequest = {
       body: {
         email: 'invalidemail.com.br',
@@ -181,5 +197,40 @@ describe('Login router', () => {
     const httpResponse = await sut.route(httpRequest)
 
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 500 if an EmailValidator instance does not provided', async () => {
+    const authUseCase = makeAuthUseCase()
+    const sut = new LoginRouter(authUseCase)
+
+    const httpRequest = {
+      body: {
+        email: 'valid@email.com',
+        password: 'valid_password'
+      }
+    }
+
+    const httpResponse = await sut.route(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should return 500 if the EmailValidator instance does not have isValid method', async () => {
+    const authUseCase = makeAuthUseCase()
+    class EmailValidator {}
+    const sut = new LoginRouter(authUseCase, new EmailValidator())
+
+    const httpRequest = {
+      body: {
+        email: 'valid@email.com',
+        password: 'valid_password'
+      }
+    }
+
+    const httpResponse = await sut.route(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 })
