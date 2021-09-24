@@ -10,7 +10,7 @@ module.exports = class LoginRouter {
       return HttpResponse.serverError()
     }
 
-    if (!this.authUseCase) {
+    if (!this.authUseCase || !this.authUseCase.auth) {
       return HttpResponse.serverError()
     }
 
