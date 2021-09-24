@@ -17,6 +17,7 @@ module.exports = class LoginRouter {
         return HttpResponse.badRequest(error)
       }
 
+      // TODO: Refactor, move this code to a separated file
       if (!/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
         const invalidError = new InvalidParamError('email')
 
