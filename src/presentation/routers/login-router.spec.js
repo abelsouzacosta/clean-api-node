@@ -8,20 +8,20 @@ const makeSut = () => {
   const authUseCaseSpy = makeAuthUseCase()
   authUseCaseSpy.accessToken = 'any_token'
   const emailValidator = makeEmailValidatorSpy()
-
   const sut = new LoginRouter(authUseCaseSpy, emailValidator)
 
   return { sut, authUseCaseSpy, emailValidator }
 }
 
 const makeEmailValidatorSpy = () => {
-  class EmailValidator {
-    isValid (address) {
+  class EmailValidatorSpy {
+    isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
 
-  const emailValidatorSpy = new EmailValidator()
+  const emailValidatorSpy = new EmailValidatorSpy()
   emailValidatorSpy.isEmailValid = true
 
   return emailValidatorSpy
@@ -260,5 +260,19 @@ describe('Login router', () => {
 
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('Should call EmailValidator with valid credentials', async () => {
+    const { sut, emailValidator } = makeSut()
+    const httpRequest = {
+      body: {
+        email: 'valid@email.com',
+        password: '123'
+      }
+    }
+
+    await sut.route(httpRequest)
+
+    expect(emailValidator.email).toEqual(httpRequest.body.email)
   })
 })
