@@ -1,8 +1,8 @@
 const { MissingParamError } = require('../../utils/errors')
 
 class AuthUseCase {
-  constructor (repository) {
-    this.repository = repository
+  constructor (loadUserByEmailRepositorySpy) {
+    this.loadUserByEmailRepositorySpy = loadUserByEmailRepositorySpy
   }
 
   async auth (email, password) {
@@ -14,7 +14,7 @@ class AuthUseCase {
       throw new MissingParamError('password')
     }
 
-    await this.repository.load(email)
+    await this.loadUserByEmailRepositorySpy.load(email)
   }
 }
 
