@@ -19,13 +19,13 @@ describe('Auth Use Case', () => {
     const sut = makeSut()
     const promise = sut.auth()
 
-    expect(promise).rejects.toEqual(new MissingParamError('email'))
+    expect(promise).rejects.toThrow(new MissingParamError('email'))
   })
 
   it('Should throws an exception if no password is provided', () => {
     const sut = makeSut()
     const promise = sut.auth('valid@email.com')
 
-    expect(promise).rejects.toEqual(new MissingParamError('password'))
+    expect(promise).rejects.toThrow(new MissingParamError('password'))
   })
 })
