@@ -1,6 +1,10 @@
 const { MissingParamError } = require('../../utils/errors')
 
 class AuthUseCase {
+  constructor (repository) {
+    this.repository = repository
+  }
+
   async auth (email, password) {
     if (!email || email === '') {
       throw new MissingParamError('email')
@@ -9,6 +13,8 @@ class AuthUseCase {
     if (!password || password === '') {
       throw new MissingParamError('password')
     }
+
+    await this.repository.load(email)
   }
 }
 
@@ -27,5 +33,18 @@ describe('Auth Use Case', () => {
     const promise = sut.auth('valid@email.com')
 
     expect(promise).rejects.toThrow(new MissingParamError('password'))
+  })
+
+  it('Should call LoadUserByEmailRepository with correct email', async () => {
+    class LoadUserByEmailRepositoty {
+      async load (email) {
+        this.email = email
+      }
+    }
+    const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositoty()
+    const sut = new AuthUseCase(loadUserByEmailRepositorySpy)
+    await sut.auth('valid@mail.com', '123')
+
+    expect(loadUserByEmailRepositorySpy.email).toBe('valid@mail.com')
   })
 })
