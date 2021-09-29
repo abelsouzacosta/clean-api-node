@@ -170,5 +170,6 @@ describe('Auth Use Case', () => {
     const accessToken = await sut.auth('valid@mail.com', 'valid_password')
 
     expect(accessToken).toBe(tokenGenerator.accessToken)
+    expect(accessToken).toBeTruthy()
   })
 })
