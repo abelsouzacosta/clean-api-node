@@ -28,6 +28,10 @@ module.exports = class AuthUseCase {
     if (!this.tokenGenerator) {
       throw new MissingParamError('tokenGenerator')
     }
+
+    if (!this.tokenGenerator.generate) {
+      throw new InvalidParamError('tokenGenerator')
+    }
   }
 
   async auth (email, password) {
