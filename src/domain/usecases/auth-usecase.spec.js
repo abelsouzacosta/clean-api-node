@@ -27,23 +27,31 @@ const makeLoadUserByEmailRepository = () => {
   }
   const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositoty()
   loadUserByEmailRepositorySpy.user = {
+    id: 'any_id',
     password: 'hashed_password'
   }
 
   return loadUserByEmailRepositorySpy
 }
 
-const makeSut = () => {
+const makeTokenGenerator = () => {
   class TokenGeneratorSpy {
-    generate () {
-      return null
+    generate (id) {
+      this.userId = id
+
+      return this.accessToken
     }
   }
 
   const tokenGenerator = new TokenGeneratorSpy()
+  tokenGenerator.accessToken = 'any_token'
+  return tokenGenerator
+}
 
+const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
+  const tokenGenerator = makeTokenGenerator()
   const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy, tokenGenerator)
 
   return {
@@ -148,5 +156,12 @@ describe('Auth Use Case', () => {
 
     expect(encrypterSpy.password).toBe('any_password')
     expect(encrypterSpy.hashedPassword).toBe(loadUserByEmailRepositorySpy.user.password)
+  })
+
+  it('Should call TokenGenerator with correct userId', async () => {
+    const { sut, loadUserByEmailRepositorySpy, tokenGenerator } = makeSut()
+    await sut.auth('valid@mail.com', 'valid_password')
+
+    expect(tokenGenerator.userId).toBe(loadUserByEmailRepositorySpy.user.id)
   })
 })
