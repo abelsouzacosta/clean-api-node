@@ -98,4 +98,13 @@ describe('Auth Use Case', () => {
 
     expect(accessToken).toBeNull()
   })
+
+  it('Should call Encrypter with correct values', async () => {
+    const { sut, loadUserByEmailRepositorySpy, encrypterSpy } = makeSut()
+
+    await sut.auth('valid@email.com', 'any_password')
+
+    expect(encrypterSpy.password).toBe('any_password')
+    expect(encrypterSpy.hashedPassword).toBe(loadUserByEmailRepositorySpy.user.password)
+  })
 })
