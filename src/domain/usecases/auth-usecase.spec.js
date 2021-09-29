@@ -2,6 +2,15 @@ const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
+  class EncrypterSpy {
+    async compare (password, hashedPassword) {
+      this.password = password
+      this.hashedPassword = hashedPassword
+    }
+  }
+
+  const encrypterSpy = new EncrypterSpy()
+
   class LoadUserByEmailRepositoty {
     async load (email) {
       this.email = email
@@ -10,12 +19,15 @@ const makeSut = () => {
     }
   }
   const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositoty()
-  loadUserByEmailRepositorySpy.user = {}
-  const sut = new AuthUseCase(loadUserByEmailRepositorySpy)
+  loadUserByEmailRepositorySpy.user = {
+    password: 'hashed_password'
+  }
+  const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy)
 
   return {
     sut,
-    loadUserByEmailRepositorySpy
+    loadUserByEmailRepositorySpy,
+    encrypterSpy
   }
 }
 
@@ -53,6 +65,23 @@ describe('Auth Use Case', () => {
     const promise = sut.auth('valid@mail.com', '123')
 
     expect(promise).rejects.toThrow(new InvalidParamError('loadUserByEmailRepositorySpy'))
+  })
+
+  it('Should throw a new MissinParamexception exception if the encrypter was not provided', async () => {
+    const { loadUserByEmailRepositorySpy } = makeSut()
+    const sut = new AuthUseCase(loadUserByEmailRepositorySpy)
+    const promise = sut.auth('valid@mail.com', 'valid_password')
+
+    expect(promise).rejects.toThrow(new MissingParamError('encrypter'))
+  })
+
+  it('Should throw a new InvalidParamException if the encrypter doesnt have compare method', async () => {
+    const { loadUserByEmailRepositorySpy } = makeSut()
+    const sut = new AuthUseCase(loadUserByEmailRepositorySpy, {})
+
+    const promise = sut.auth('valid@mail.com', 'any_password')
+
+    expect(promise).rejects.toThrow(new InvalidParamError('encrypter'))
   })
 
   it('Should return null if an invalid email are provided', async () => {
