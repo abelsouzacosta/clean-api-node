@@ -2,9 +2,10 @@ const { MissingParamError } = require('../../utils/errors')
 const { InvalidParamError } = require('../../utils/errors')
 
 module.exports = class AuthUseCase {
-  constructor (loadUserByEmailRepositorySpy, encrypter) {
+  constructor (loadUserByEmailRepositorySpy, encrypter, tokenGenerator) {
     this.loadUserByEmailRepositorySpy = loadUserByEmailRepositorySpy
     this.encrypter = encrypter
+    this.tokenGenerator = tokenGenerator
   }
 
   validateModuleDependencies () {
@@ -22,6 +23,10 @@ module.exports = class AuthUseCase {
 
     if (!this.encrypter.compare) {
       throw new InvalidParamError('encrypter')
+    }
+
+    if (!this.tokenGenerator) {
+      throw new MissingParamError('tokenGenerator')
     }
   }
 

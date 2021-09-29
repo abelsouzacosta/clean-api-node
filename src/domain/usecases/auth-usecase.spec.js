@@ -34,14 +34,23 @@ const makeLoadUserByEmailRepository = () => {
 }
 
 const makeSut = () => {
+  class TokenGeneratorSpy {
+    generate () {
+      return null
+    }
+  }
+
+  const tokenGenerator = new TokenGeneratorSpy()
+
   const encrypterSpy = makeEncrypter()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-  const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy)
+  const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy, tokenGenerator)
 
   return {
     sut,
     loadUserByEmailRepositorySpy,
-    encrypterSpy
+    encrypterSpy,
+    tokenGenerator
   }
 }
 
@@ -81,7 +90,7 @@ describe('Auth Use Case', () => {
     expect(promise).rejects.toThrow(new InvalidParamError('loadUserByEmailRepositorySpy'))
   })
 
-  it('Should throw a new MissinParamexception exception if the encrypter was not provided', async () => {
+  it('Should throw a new MissinParamError if the encrypter was not provided', async () => {
     const { loadUserByEmailRepositorySpy } = makeSut()
     const sut = new AuthUseCase(loadUserByEmailRepositorySpy)
     const promise = sut.auth('valid@mail.com', 'valid_password')
@@ -89,13 +98,22 @@ describe('Auth Use Case', () => {
     expect(promise).rejects.toThrow(new MissingParamError('encrypter'))
   })
 
-  it('Should throw a new InvalidParamException if the encrypter doesnt have compare method', async () => {
+  it('Should throw a new InvalidParamError if the encrypter doesnt have compare method', async () => {
     const { loadUserByEmailRepositorySpy } = makeSut()
     const sut = new AuthUseCase(loadUserByEmailRepositorySpy, {})
 
     const promise = sut.auth('valid@mail.com', 'any_password')
 
     expect(promise).rejects.toThrow(new InvalidParamError('encrypter'))
+  })
+
+  it('Should throw a new MissingParamError if the token generator was not provided', async () => {
+    const { loadUserByEmailRepositorySpy, encrypterSpy } = makeSut()
+    const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy)
+
+    const promise = sut.auth('valid@mail.com', 'any_password')
+
+    expect(promise).rejects.toThrow(new MissingParamError('tokenGenerator'))
   })
 
   it('Should return null if an invalid email are provided', async () => {
