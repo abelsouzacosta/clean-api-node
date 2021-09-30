@@ -181,6 +181,20 @@ describe('Auth Use Case', () => {
     expect(promise).rejects.toThrow(new MissingParamError('updateAccessTokenRepository'))
   })
 
+  it('Should throw a new InvalidParamError if UpdateAccessToken doenst have update method', async () => {
+    const { loadUserByEmailRepositorySpy, encrypterSpy, tokenGeneratorSpy } = makeSut()
+    const sut = new AuthUseCase({
+      loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+      encrypter: encrypterSpy,
+      tokenGenerator: tokenGeneratorSpy,
+      updateAccessTokenRepository: {}
+    })
+
+    const promise = sut.auth('valid@mail.com', 'any_password')
+
+    expect(promise).rejects.toThrow(new InvalidParamError('updateAccessTokenRepository'))
+  })
+
   it('Should return null if an invalid email are provided', async () => {
     const { sut, loadUserByEmailRepositorySpy } = makeSut()
     loadUserByEmailRepositorySpy.user = null

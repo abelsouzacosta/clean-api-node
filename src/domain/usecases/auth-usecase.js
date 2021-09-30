@@ -37,6 +37,10 @@ module.exports = class AuthUseCase {
     if (!this.updateAccessTokenRepository) {
       throw new MissingParamError('updateAccessTokenRepository')
     }
+
+    if (!this.updateAccessTokenRepository.update) {
+      throw new InvalidParamError('updateAccessTokenRepository')
+    }
   }
 
   async auth (email, password) {
