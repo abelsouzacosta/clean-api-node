@@ -35,7 +35,7 @@ module.exports = class AuthUseCase {
     }
 
     if (!this.updateAccessTokenRepository) {
-      throw new MissingParamError('updateAccessToken')
+      throw new MissingParamError('updateAccessTokenRepository')
     }
   }
 
