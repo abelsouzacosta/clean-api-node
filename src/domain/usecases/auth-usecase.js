@@ -61,6 +61,8 @@ module.exports = class AuthUseCase {
     if (isValid) {
       const accessToken = await this.tokenGenerator.generate(user.id)
 
+      await this.updateAccessTokenRepository.update(user.id, accessToken)
+
       return accessToken
     }
 
