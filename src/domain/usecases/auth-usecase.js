@@ -2,11 +2,11 @@ const { MissingParamError } = require('../../utils/errors')
 const { InvalidParamError } = require('../../utils/errors')
 
 module.exports = class AuthUseCase {
-  constructor ({ loadUserByEmailRepository, encrypter, tokenGenerator, updateAccessToken } = {}) {
+  constructor ({ loadUserByEmailRepository, encrypter, tokenGenerator, updateAccessTokenRepository } = {}) {
     this.loadUserByEmailRepository = loadUserByEmailRepository
     this.encrypter = encrypter
     this.tokenGenerator = tokenGenerator
-    this.updateAccessToken = updateAccessToken
+    this.updateAccessTokenRepository = updateAccessTokenRepository
   }
 
   validateModuleDependencies () {
@@ -34,7 +34,7 @@ module.exports = class AuthUseCase {
       throw new InvalidParamError('tokenGenerator')
     }
 
-    if (!this.updateAccessToken) {
+    if (!this.updateAccessTokenRepository) {
       throw new MissingParamError('updateAccessToken')
     }
   }

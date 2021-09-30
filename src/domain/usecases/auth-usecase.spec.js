@@ -69,7 +69,7 @@ const makeSut = () => {
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
     encrypter: encrypterSpy,
     tokenGenerator: tokenGeneratorSpy,
-    updateAccessToken: updateAccessTokenSpy
+    updateAccessTokenRepository: updateAccessTokenSpy
   })
 
   return {
@@ -178,7 +178,7 @@ describe('Auth Use Case', () => {
 
     const promise = sut.auth('valid@mail.com', 'any_password')
 
-    expect(promise).rejects.toThrow(new MissingParamError('updateAccessToken'))
+    expect(promise).rejects.toThrow(new MissingParamError('updateAccessTokenRepository'))
   })
 
   it('Should return null if an invalid email are provided', async () => {
