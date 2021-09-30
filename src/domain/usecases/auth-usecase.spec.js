@@ -48,14 +48,28 @@ const makeTokenGenerator = () => {
   return tokenGenerator
 }
 
+const makeUpdateAccessToken = () => {
+  class UpdateAccessToken {
+    update (token) {
+      this.token = token
+    }
+  }
+
+  const updateAccessToken = new UpdateAccessToken()
+
+  return updateAccessToken
+}
+
 const makeSut = () => {
   const encrypterSpy = makeEncrypter()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const tokenGeneratorSpy = makeTokenGenerator()
+  const updateAccessTokenSpy = makeUpdateAccessToken()
   const sut = new AuthUseCase({
     loadUserByEmailRepository: loadUserByEmailRepositorySpy,
     encrypter: encrypterSpy,
-    tokenGenerator: tokenGeneratorSpy
+    tokenGenerator: tokenGeneratorSpy,
+    updateAccessToken: updateAccessTokenSpy
   })
 
   return {
@@ -152,6 +166,19 @@ describe('Auth Use Case', () => {
     const promise = sut.auth('valid@mail.com', 'any_password')
 
     expect(promise).rejects.toThrow(new InvalidParamError('tokenGenerator'))
+  })
+
+  it('Should throw a new MissingParamError if UpdateAccessToken is not provided', async () => {
+    const { loadUserByEmailRepositorySpy, encrypterSpy, tokenGeneratorSpy } = makeSut()
+    const sut = new AuthUseCase({
+      loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+      encrypter: encrypterSpy,
+      tokenGenerator: tokenGeneratorSpy
+    })
+
+    const promise = sut.auth('valid@mail.com', 'any_password')
+
+    expect(promise).rejects.toThrow(new MissingParamError('updateAccessToken'))
   })
 
   it('Should return null if an invalid email are provided', async () => {
