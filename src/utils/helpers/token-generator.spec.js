@@ -48,6 +48,7 @@ describe('Token Generator', () => {
     sut.generate('any_id')
 
     expect(sut.id).toBe(jwt.id)
+    expect(sut.secret).toBe(jwt.secret)
   })
 
   it('Should return null if JWT returns null', () => {
