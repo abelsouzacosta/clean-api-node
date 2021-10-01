@@ -1,4 +1,5 @@
 const MissingParamError = require('../errors/missing-param-error')
+const jwt = require('jsonwebtoken')
 
 class TokenGenerator {
   generate (id) {
@@ -6,7 +7,9 @@ class TokenGenerator {
       throw new MissingParamError('id')
     }
 
-    return this.accessToken
+    this.id = id
+
+    return jwt.sign(this.id, 'secret')
   }
 }
 
@@ -17,16 +20,15 @@ const makeSut = () => {
 }
 
 describe('Token Generator', () => {
-  it('Should return null if JWT returns null', () => {
-    const sut = makeSut()
-    sut.accessToken = null
-    const accessToken = sut.generate('any_id')
-
-    expect(accessToken).toBeNull()
-  })
-
   it('Should throw a new MissingParamException if an id is not provided', () => {
     const sut = new TokenGenerator()
     expect(sut.generate).toThrow(new MissingParamError('id'))
+  })
+
+  it('Should call generate with correct value', () => {
+    const sut = makeSut()
+    sut.generate('any_id')
+
+    expect(sut.id).toBe('any_id')
   })
 })
