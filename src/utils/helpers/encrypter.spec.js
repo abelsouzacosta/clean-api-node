@@ -1,8 +1,10 @@
+const bcrypt = require('bcrypt')
+
 const makeSut = () => {
   class Encrypter {
     async compare (string, hash) {
-      this.string = string
-      this.hash = hash
+      this.isValid = await bcrypt.compare(string, hash)
+
       return this.isValid
     }
   }
@@ -23,8 +25,7 @@ describe('Encrypter', () => {
 
   it('Should return false when bcrypt returns false', async () => {
     const sut = makeSut()
-    sut.isValid = false
-
+    bcrypt.isValid = false
     const isValid = await sut.compare('any_password', 'imcompatible_hash')
 
     expect(isValid).toBe(false)
