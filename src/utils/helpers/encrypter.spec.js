@@ -30,4 +30,12 @@ describe('Encrypter', () => {
 
     expect(isValid).toBe(false)
   })
+
+  it('Should call bcrypt with correct values', async () => {
+    const sut = makeSut()
+    await sut.compare('any_string', 'hashed_string')
+
+    expect(bcrypt.string).toBe('any_string')
+    expect(bcrypt.hash).toBe('hashed_string')
+  })
 })
