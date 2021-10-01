@@ -8,6 +8,10 @@ const makeSut = () => {
         throw new MissingParamError('string')
       }
 
+      if (!hash || hash === '') {
+        throw new MissingParamError('hash')
+      }
+
       this.isValid = await bcrypt.compare(string, hash)
 
       return this.isValid
@@ -49,5 +53,12 @@ describe('Encrypter', () => {
     const promise = sut.compare()
 
     expect(promise).rejects.toThrow(new MissingParamError('string'))
+  })
+
+  it('Should throw a new MissingParamError if a hash is not provieded', async () => {
+    const sut = makeSut()
+    const promise = sut.compare('string')
+
+    expect(promise).rejects.toThrow(new MissingParamError('hash'))
   })
 })
