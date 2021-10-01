@@ -21,7 +21,7 @@ class TokenGenerator {
 
     this.id = id
 
-    return jwt.sign(this.id, 'secret')
+    return jwt.sign(this.id, this.secret)
   }
 }
 
