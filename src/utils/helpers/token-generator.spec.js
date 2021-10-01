@@ -31,4 +31,12 @@ describe('Token Generator', () => {
 
     expect(sut.id).toBe('any_id')
   })
+
+  it('Should return null if JWT returns null', () => {
+    const sut = makeSut()
+    jwt.token = null
+    const accessToken = sut.generate('any_id')
+
+    expect(accessToken).toBeNull()
+  })
 })
