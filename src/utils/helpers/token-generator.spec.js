@@ -42,9 +42,8 @@ describe('Token Generator', () => {
 
   it('Should return token if JWT retuns token ', () => {
     const sut = makeSut()
-    jwt.token = 'any_token'
     const accessToken = sut.generate('any_id')
 
-    expect(accessToken).toBe('any_token')
+    expect(accessToken).toBe(jwt.token)
   })
 })
