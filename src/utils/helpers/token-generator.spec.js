@@ -2,10 +2,22 @@ const MissingParamError = require('../errors/missing-param-error')
 const jwt = require('jsonwebtoken')
 
 class TokenGenerator {
+  constructor (secret) {
+    this.secret = secret
+  }
+
+  validateConstructor () {
+    if (!this.secret || this.secret === '') {
+      throw new MissingParamError('secret')
+    }
+  }
+
   generate (id) {
     if (!id || id === '') {
       throw new MissingParamError('id')
     }
+
+    this.validateConstructor()
 
     this.id = id
 
@@ -14,15 +26,21 @@ class TokenGenerator {
 }
 
 const makeSut = () => {
-  const tokenGenerator = new TokenGenerator()
+  const tokenGenerator = new TokenGenerator('secret')
 
   return tokenGenerator
 }
 
 describe('Token Generator', () => {
-  it('Should throw a new MissingParamException if an id is not provided', () => {
-    const sut = new TokenGenerator()
+  it('Should throw a new MissingParamError if an id is not provided', () => {
+    const sut = makeSut()
     expect(sut.generate).toThrow(new MissingParamError('id'))
+  })
+
+  it('Should throw a new MissingParameError if an secret is not provided', () => {
+    const sut = new TokenGenerator()
+
+    expect(() => { sut.generate('any_id') }).toThrow(new MissingParamError('secret'))
   })
 
   it('Should call generate with correct value', () => {
