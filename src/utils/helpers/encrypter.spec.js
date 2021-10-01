@@ -1,23 +1,8 @@
 const bcrypt = require('bcrypt')
 const MissingParamError = require('../errors/missing-param-error')
+const Encrypter = require('./encrypter')
 
 const makeSut = () => {
-  class Encrypter {
-    async compare (string, hash) {
-      if (!string || string === '') {
-        throw new MissingParamError('string')
-      }
-
-      if (!hash || hash === '') {
-        throw new MissingParamError('hash')
-      }
-
-      this.isValid = await bcrypt.compare(string, hash)
-
-      return this.isValid
-    }
-  }
-
   const sut = new Encrypter()
   sut.isValid = true
 
