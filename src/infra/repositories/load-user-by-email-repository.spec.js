@@ -65,7 +65,11 @@ describe('LoadUserByEmailRepostory', () => {
   it('Should return an user if user is found', async () => {
     const { sut, userModel } = makeSut()
     await userModel.insertOne({
-      email: 'valid@mail.com'
+      email: 'valid@mail.com',
+      name: 'any_name',
+      age: 50,
+      state: 'any_state',
+      password: 'hashed_password'
     })
     const user = await sut.load('valid@mail.com')
 
