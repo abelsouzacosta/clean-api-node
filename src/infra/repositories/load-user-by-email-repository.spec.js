@@ -55,13 +55,13 @@ describe('LoadUserByEmailRepostory', () => {
     const sut = new LoadUserByEmailRepository(userModel)
     const promise = sut.load()
 
-    expect(promise).rejects.toThrow(new MissingParamError('email'))
+    await expect(promise).rejects.toThrow(new MissingParamError('email'))
   })
 
   it('Should throw a new MissingParamError if an userModel is not provided', async () => {
     const sut = new LoadUserByEmailRepository()
     const promise = sut.load('valid@mail.com')
 
-    expect(promise).rejects.toThrow(new MissingParamError('userModel'))
+    await expect(promise).rejects.toThrow(new MissingParamError('userModel'))
   })
 })

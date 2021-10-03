@@ -37,13 +37,13 @@ describe('Encrypter', () => {
     const sut = makeSut()
     const promise = sut.compare()
 
-    expect(promise).rejects.toThrow(new MissingParamError('string'))
+    await expect(promise).rejects.toThrow(new MissingParamError('string'))
   })
 
   it('Should throw a new MissingParamError if a hash is not provieded', async () => {
     const sut = makeSut()
     const promise = sut.compare('string')
 
-    expect(promise).rejects.toThrow(new MissingParamError('hash'))
+    await expect(promise).rejects.toThrow(new MissingParamError('hash'))
   })
 })
