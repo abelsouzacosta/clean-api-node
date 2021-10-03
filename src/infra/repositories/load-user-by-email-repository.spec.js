@@ -21,7 +21,13 @@ class LoadUserByEmailRepository {
       throw new MissingParamError('email')
     }
 
-    const user = this.userModel.findOne({ email })
+    const user = this.userModel.findOne({
+      email
+    }, {
+      projection: {
+        password: 1
+      }
+    })
 
     return user
   }
@@ -64,7 +70,7 @@ describe('LoadUserByEmailRepostory', () => {
 
   it('Should return an user if user is found', async () => {
     const { sut, userModel } = makeSut()
-    await userModel.insertOne({
+    const fakeUser = await userModel.insertOne({
       email: 'valid@mail.com',
       name: 'any_name',
       age: 50,
@@ -73,7 +79,7 @@ describe('LoadUserByEmailRepostory', () => {
     })
     const user = await sut.load('valid@mail.com')
 
-    expect(user.email).toBe('valid@mail.com')
+    expect(user._id).toEqual(fakeUser.insertedId)
   })
 
   it('Should throw a new MissingParamError if an email is not provided', async () => {
