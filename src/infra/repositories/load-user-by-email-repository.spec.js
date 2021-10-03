@@ -1,6 +1,8 @@
 const { MissingParamError } = require('../../utils/errors')
 const { MongoClient } = require('mongodb')
 
+let client, db
+
 class LoadUserByEmailRepository {
   constructor (userModel) {
     this.userModel = userModel
@@ -25,9 +27,17 @@ class LoadUserByEmailRepository {
   }
 }
 
-describe('LoadUserByEmailRepostory', () => {
-  let client, db
+const makeSut = () => {
+  const userModel = db.collection('users')
+  const sut = new LoadUserByEmailRepository(userModel)
 
+  return {
+    userModel,
+    sut
+  }
+}
+
+describe('LoadUserByEmailRepostory', () => {
   beforeAll(async () => {
     client = await MongoClient.connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
@@ -45,8 +55,7 @@ describe('LoadUserByEmailRepostory', () => {
   })
 
   it('Should return null if no user is found', async () => {
-    const userModel = db.collection('users')
-    const sut = new LoadUserByEmailRepository(userModel)
+    const { sut } = makeSut()
 
     const user = await sut.load('invalid@mail.com')
 
@@ -54,12 +63,10 @@ describe('LoadUserByEmailRepostory', () => {
   })
 
   it('Should return an user if user is found', async () => {
-    const userModel = db.collection('users')
+    const { sut, userModel } = makeSut()
     await userModel.insertOne({
       email: 'valid@mail.com'
     })
-
-    const sut = new LoadUserByEmailRepository(userModel)
     const user = await sut.load('valid@mail.com')
 
     expect(user.email).toBe('valid@mail.com')
