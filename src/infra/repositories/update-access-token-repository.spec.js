@@ -1,38 +1,7 @@
 const MissingParamError = require('../../utils/errors/missing-param-error')
 const MongoHelper = require('../helpers/mongo-helper')
+const UpdateAccessTokenRepository = require('./update-access-token-repository')
 let db
-
-class UpdateAccessTokenRepository {
-  constructor (userModel) {
-    this.userModel = userModel
-  }
-
-  validateConstructor () {
-    if (!this.userModel) {
-      throw new MissingParamError('userModel')
-    }
-  }
-
-  async update (userId, accessToken) {
-    if (!userId || userId === '') {
-      throw new MissingParamError('userId')
-    }
-
-    if (!accessToken || accessToken === '') {
-      throw new MissingParamError('accessToken')
-    }
-
-    this.validateConstructor()
-
-    this.userModel.updateOne({
-      _id: userId
-    }, {
-      $set: {
-        accessToken
-      }
-    })
-  }
-}
 
 const makeSut = () => {
   const userModel = db.collection('users')
