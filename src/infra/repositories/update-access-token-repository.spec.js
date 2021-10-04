@@ -34,6 +34,16 @@ class UpdateAccessTokenRepository {
   }
 }
 
+const makeSut = () => {
+  const userModel = db.collection('users')
+  const sut = new UpdateAccessTokenRepository(userModel)
+
+  return {
+    sut,
+    userModel
+  }
+}
+
 describe('UpdateAccessTokenRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL)
@@ -49,14 +59,14 @@ describe('UpdateAccessTokenRepository', () => {
   })
 
   it('Should throw a new MissingParamError if no user id provided', async () => {
-    const sut = new UpdateAccessTokenRepository()
+    const { sut } = makeSut()
     const accessToken = sut.update('', 'any_token')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('userId'))
   })
 
   it('Should throw new MissingParamError if no accessToken is provided', async () => {
-    const sut = new UpdateAccessTokenRepository()
+    const { sut } = makeSut()
     const accessToken = sut.update('any_id')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('accessToken'))
@@ -70,8 +80,7 @@ describe('UpdateAccessTokenRepository', () => {
   })
 
   it('Should update the user with given id with given accessToken', async () => {
-    const userModel = db.collection('users')
-    const sut = new UpdateAccessTokenRepository(userModel)
+    const { sut, userModel } = makeSut()
     const mockUser = await userModel.insertOne({
       email: 'valid@mail.com',
       name: 'any_name',
