@@ -13,13 +13,13 @@ class UpdateAccessTokenRepository {
     }
   }
 
-  async update (token, userId) {
-    if (!token || token === '') {
-      throw new MissingParamError('token')
-    }
-
+  async update (userId, accessToken) {
     if (!userId || userId === '') {
       throw new MissingParamError('userId')
+    }
+
+    if (!accessToken || accessToken === '') {
+      throw new MissingParamError('accessToken')
     }
 
     this.validateConstructor()
@@ -40,23 +40,23 @@ describe('UpdateAccessTokenRepository', () => {
     await MongoHelper.disconnect()
   })
 
-  it('Should throw new MissingParamError if no token is provided', async () => {
-    const sut = new UpdateAccessTokenRepository()
-    const accessToken = sut.update()
-
-    await expect(accessToken).rejects.toThrow(new MissingParamError('token'))
-  })
-
   it('Should throw a new MissingParamError if no user id provided', async () => {
     const sut = new UpdateAccessTokenRepository()
-    const accessToken = sut.update('any_token')
+    const accessToken = sut.update('', 'any_token')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('userId'))
   })
 
+  it('Should throw new MissingParamError if no accessToken is provided', async () => {
+    const sut = new UpdateAccessTokenRepository()
+    const accessToken = sut.update('any_id')
+
+    await expect(accessToken).rejects.toThrow(new MissingParamError('accessToken'))
+  })
+
   it('Should throw a new MissingParamError if no userModel is provided', async () => {
     const sut = new UpdateAccessTokenRepository()
-    const accessToken = sut.update('valid_token', 'valid_id')
+    const accessToken = sut.update('valid_id', 'valid_token')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('userModel'))
   })
