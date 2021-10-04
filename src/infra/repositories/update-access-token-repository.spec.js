@@ -23,6 +23,14 @@ class UpdateAccessTokenRepository {
     }
 
     this.validateConstructor()
+
+    this.userModel.updateOne({
+      _id: userId
+    }, {
+      $set: {
+        accessToken
+      }
+    })
   }
 }
 
@@ -59,5 +67,25 @@ describe('UpdateAccessTokenRepository', () => {
     const accessToken = sut.update('valid_id', 'valid_token')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('userModel'))
+  })
+
+  it('Should update the user with given id with given accessToken', async () => {
+    const userModel = db.collection('users')
+    const sut = new UpdateAccessTokenRepository(userModel)
+    const mockUser = await userModel.insertOne({
+      email: 'valid@mail.com',
+      name: 'any_name',
+      age: 50,
+      state: 'any_state',
+      password: 'hashed_password'
+    })
+
+    await sut.update(mockUser.insertedId, 'valid_token')
+
+    const insertedMockUser = await userModel.findOne({
+      _id: mockUser.insertedId
+    })
+
+    await expect(insertedMockUser.accessToken).toBe('valid_token')
   })
 })
