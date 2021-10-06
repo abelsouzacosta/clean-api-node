@@ -31,4 +31,14 @@ describe('Setup App', () => {
 
     expect(res.headers['access-control-allow-headers']).toBe('*')
   })
+
+  it('Should enable method cors', async () => {
+    app.get('/test_cors_methods', (req, res) => {
+      return res.status(200).send('')
+    })
+
+    const res = await request(app).get('/test_cors_methods')
+
+    expect(res.headers['access-control-allow-methods']).toBe('*')
+  })
 })
