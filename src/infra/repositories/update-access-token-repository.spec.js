@@ -4,13 +4,7 @@ const UpdateAccessTokenRepository = require('./update-access-token-repository')
 let db
 
 const makeSut = () => {
-  const userModel = db.collection('users')
-  const sut = new UpdateAccessTokenRepository(userModel)
-
-  return {
-    sut,
-    userModel
-  }
+  return new UpdateAccessTokenRepository()
 }
 
 describe('UpdateAccessTokenRepository', () => {
@@ -28,29 +22,22 @@ describe('UpdateAccessTokenRepository', () => {
   })
 
   it('Should throw a new MissingParamError if no user id provided', async () => {
-    const { sut } = makeSut()
+    const sut = makeSut()
     const accessToken = sut.update('', 'any_token')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('userId'))
   })
 
   it('Should throw new MissingParamError if no accessToken is provided', async () => {
-    const { sut } = makeSut()
+    const sut = makeSut()
     const accessToken = sut.update('any_id')
 
     await expect(accessToken).rejects.toThrow(new MissingParamError('accessToken'))
   })
 
-  it('Should throw a new MissingParamError if no userModel is provided', async () => {
-    const sut = new UpdateAccessTokenRepository()
-    const accessToken = sut.update('valid_id', 'valid_token')
-
-    await expect(accessToken).rejects.toThrow(new MissingParamError('userModel'))
-  })
-
   it('Should update the user with given id with given accessToken', async () => {
-    const { sut, userModel } = makeSut()
-    const mockUser = await userModel.insertOne({
+    const sut = makeSut()
+    const mockUser = await db.collection('users').insertOne({
       email: 'valid@mail.com',
       name: 'any_name',
       age: 50,
@@ -60,7 +47,7 @@ describe('UpdateAccessTokenRepository', () => {
 
     await sut.update(mockUser.insertedId, 'valid_token')
 
-    const insertedMockUser = await userModel.findOne({
+    const insertedMockUser = await db.collection('users').findOne({
       _id: mockUser.insertedId
     })
 
