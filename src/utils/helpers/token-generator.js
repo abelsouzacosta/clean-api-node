@@ -21,6 +21,6 @@ module.exports = class TokenGenerator {
 
     this.id = id
 
-    return jwt.sign(this.id, this.secret)
+    return jwt.sign({ _id: this.id }, this.secret)
   }
 }

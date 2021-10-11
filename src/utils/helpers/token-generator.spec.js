@@ -1,3 +1,14 @@
+jest.mock('jsonwebtoken', () => ({
+  token: 'any_token',
+
+  sign (payload, secret) {
+    this.payload = payload
+    this.secret = secret
+
+    return this.token
+  }
+}))
+
 const MissingParamError = require('../errors/missing-param-error')
 const jwt = require('jsonwebtoken')
 const TokenGenerator = require('./token-generator')
@@ -24,8 +35,10 @@ describe('Token Generator', () => {
     const sut = makeSut()
     sut.generate('any_id')
 
-    expect(sut.id).toBe(jwt.id)
-    expect(sut.secret).toBe(jwt.secret)
+    expect(jwt.payload).toEqual({
+      _id: 'any_id'
+    })
+    expect(jwt.secret).toBe(sut.secret)
   })
 
   it('Should return null if JWT returns null', () => {
